@@ -14,7 +14,7 @@ Request body:
   "city": "kota...",
   "province": "provinsi...",
   "country": "Negara ...",
-  "portalCode": "143243"
+  "postalCode": "143243"
 }
 ```
 
@@ -28,7 +28,7 @@ Response body (Success):
     "city": "kota...",
     "province": "provinsi...",
     "country": "Negara ...",
-    "portalCode": "143243"
+    "postalCode": "143243"
   }
 }
 ```
@@ -55,7 +55,7 @@ Request body:
   "city": "kota...",
   "province": "provinsi...",
   "country": "Negara ...",
-  "portalCode": "143243"
+  "postalCode": "143243"
 }
 ```
 
@@ -69,7 +69,7 @@ Response body (Success):
     "city": "kota...",
     "province": "provinsi...",
     "country": "Negara ...",
-    "portalCode": "143243"
+    "postalCode": "143243"
   }
 }
 ```
@@ -98,7 +98,7 @@ Response body (Success):
     "city": "kota...",
     "province": "provinsi...",
     "country": "Negara ...",
-    "portalCode": "143243"
+    "postalCode": "143243"
   }
 }
 ```
@@ -148,7 +148,7 @@ Response body (Success):
       "city": "kota...",
       "province": "provinsi...",
       "country": "Negara ...",
-      "portalCode": "143243"
+      "postalCode": "143243"
     }
   ]
 }
