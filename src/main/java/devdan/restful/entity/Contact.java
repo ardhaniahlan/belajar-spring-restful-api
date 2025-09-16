@@ -19,7 +19,7 @@ public class Contact {
     @Id
     private String id;
 
-    private String username;
+//    private String username;
 
     @Column(name = "first_name")
     private String firstName;
