@@ -2,6 +2,7 @@ package devdan.restful.service;
 
 import devdan.restful.entity.User;
 import devdan.restful.model.RegisterUserRequest;
+import devdan.restful.model.UserResponse;
 import devdan.restful.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
@@ -46,5 +47,10 @@ public class UserService {
         userRepository.save(user);
     }
 
-
+    public UserResponse get(User user){
+        return UserResponse.builder()
+                .username(user.getUsername())
+                .name(user.getName())
+                .build();
+    }
 }
