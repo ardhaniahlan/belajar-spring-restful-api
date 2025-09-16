@@ -2,6 +2,7 @@ package devdan.restful.service;
 
 import devdan.restful.entity.User;
 import devdan.restful.model.RegisterUserRequest;
+import devdan.restful.model.UpdateUserRequest;
 import devdan.restful.model.UserResponse;
 import devdan.restful.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -51,6 +53,24 @@ public class UserService {
         return UserResponse.builder()
                 .username(user.getUsername())
                 .name(user.getName())
+                .build();
+    }
+
+    @Transactional
+    public UserResponse update(User user, UpdateUserRequest request){
+        validationService.validate(request);
+        if (Objects.nonNull(request.getName())){
+            user.setName(request.getName());
+        }
+        if (Objects.nonNull(request.getPassword())){
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        userRepository.save(user);
+
+        return UserResponse.builder()
+                .name(user.getName())
+                .username(user.getUsername())
                 .build();
     }
 }
