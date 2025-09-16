@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -120,4 +121,49 @@ class AuthControllerTest {
             assertNotNull(response.getErrors());
         });
     }
+
+    @Test
+    void logoutFailed() throws Exception{
+        mockMvc.perform(
+                delete("/api/auth/logout")
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+        ).andExpectAll(
+                status().isUnauthorized()
+        ).andDo(result -> {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+            assertNotNull(response.getErrors());
+        });
+    }
+
+    @Test
+    void logoutSuccess() throws Exception{
+
+        User user = new User();
+        user.setName("Ardhan");
+        user.setUsername("test");
+        user.setPassword(passwordEncoder.encode("admin"));
+        user.setToken("aaaa");
+        user.setTokenExpiredAt(System.currentTimeMillis() + 100000);
+        userRepository.save(user);
+
+        mockMvc.perform(
+                delete("/api/auth/logout")
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .header("X-API-TOKEN", "aaaa")
+        ).andExpectAll(
+                status().isOk()
+        ).andDo(result -> {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+            assertNull(response.getErrors());
+            assertEquals("OK", response.getData());
+
+            User userDB = userRepository.findById("test").orElse(null);
+            assertNotNull(userDB);
+            assertNull(userDB.getToken());
+            assertNull(userDB.getTokenExpiredAt());
+        });
+    }
+
 }
