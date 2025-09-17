@@ -8,9 +8,7 @@ import devdan.restful.model.WebResponse;
 import devdan.restful.service.ContactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class ContactController {
@@ -25,6 +23,15 @@ public class ContactController {
     )
     public WebResponse<ContactResponse> create(User user,@RequestBody CreateContactRequest request){
         ContactResponse response = contactService.create(user, request);
+        return WebResponse.<ContactResponse>builder().data(response).build();
+    }
+
+    @GetMapping(
+            path = "/api/contacts/{idContact}",
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<ContactResponse> get(User user,@PathVariable("idContact") String id){
+        ContactResponse response = contactService.get(user, id);
         return WebResponse.<ContactResponse>builder().data(response).build();
     }
 }
