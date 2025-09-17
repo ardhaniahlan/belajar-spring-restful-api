@@ -6,6 +6,7 @@ import devdan.restful.entity.Contact;
 import devdan.restful.entity.User;
 import devdan.restful.model.ContactResponse;
 import devdan.restful.model.CreateContactRequest;
+import devdan.restful.model.UpdateContactRequest;
 import devdan.restful.model.WebResponse;
 import devdan.restful.repository.ContactRepository;
 import devdan.restful.repository.UserRepository;
@@ -155,6 +156,69 @@ class ContactControllerTest {
             assertEquals(contact.getLastName(), response.getData().getLastname());
             assertEquals(contact.getEmail(), response.getData().getEmail());
             assertEquals(contact.getPhone(), response.getData().getPhone());
+        });
+    }
+
+    @Test
+    void testUpdateContactSuccess() throws Exception{
+        User user = userRepository.findById("test").orElseThrow();
+
+        Contact contact = new Contact();
+        contact.setId(UUID.randomUUID().toString());
+        contact.setFirstName("Ardhani");
+        contact.setLastName("Ahlan");
+        contact.setEmail("ardhan@example.com");
+        contact.setPhone("0812114134");
+        contact.setUser(user);
+        contactRepository.save(contact);
+
+        CreateContactRequest request = new CreateContactRequest();
+        request.setFirstname("Ahlan");
+        request.setLastname("Ardhani");
+        request.setEmail("ahlan@example.com");
+        request.setPhone("0812114134");
+
+        mockMvc.perform(
+                put("/api/contacts/" + contact.getId())
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(request))
+                        .header("X-API-TOKEN", "aaaa")
+        ).andExpectAll(
+                status().isOk()
+        ).andDo(result -> {
+            WebResponse<ContactResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+
+            assertNull(response.getErrors());
+            assertEquals(request.getFirstname(), response.getData().getFirstname());
+            assertEquals(request.getLastname(), response.getData().getLastname());
+            assertEquals(request.getEmail(), response.getData().getEmail());
+            assertEquals(request.getPhone(), response.getData().getPhone());
+
+            assertTrue(contactRepository.existsById(contact.getId()));
+        });
+    }
+
+    @Test
+    void testUpdateContactBadRequest() throws Exception{
+        UpdateContactRequest request = new UpdateContactRequest();
+        request.setFirstname("");
+        request.setEmail("sda");
+
+        mockMvc.perform(
+                put("/api/contacts/34242423")
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(request))
+                        .header("X-API-TOKEN", "aaaa")
+        ).andExpectAll(
+                status().isBadRequest()
+        ).andDo(result -> {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+
+            assertNotNull(response.getErrors());
         });
     }
 }

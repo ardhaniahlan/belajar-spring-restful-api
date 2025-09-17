@@ -4,6 +4,7 @@ import devdan.restful.entity.Contact;
 import devdan.restful.entity.User;
 import devdan.restful.model.ContactResponse;
 import devdan.restful.model.CreateContactRequest;
+import devdan.restful.model.UpdateContactRequest;
 import devdan.restful.repository.ContactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,22 @@ public class ContactService {
     public ContactResponse get(User user, String id){
         Contact contact = contactRepository.findFirstByUserAndId(user, id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "contact not found"));
+
+        return toContactResponse(contact);
+    }
+
+    @Transactional
+    public ContactResponse update(User user, UpdateContactRequest request){
+        validationService.validate(request);
+
+        Contact contact = contactRepository.findFirstByUserAndId(user, request.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "contact not found"));
+
+        contact.setFirstName(request.getFirstname());
+        contact.setLastName(request.getLastname());
+        contact.setEmail(request.getEmail());
+        contact.setPhone(request.getPhone());
+        contactRepository.save(contact);
 
         return toContactResponse(contact);
     }
