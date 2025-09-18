@@ -4,6 +4,7 @@ import devdan.restful.entity.Address;
 import devdan.restful.entity.Contact;
 import devdan.restful.entity.User;
 import devdan.restful.model.request.CreateAddressRequest;
+import devdan.restful.model.request.UpdateAddressRequest;
 import devdan.restful.model.response.AddressResponse;
 import devdan.restful.model.response.ContactResponse;
 import devdan.restful.repository.AddressRepository;
@@ -55,6 +56,26 @@ public class AddressService {
 
         Address address = addressRepository.findFirstByContactAndId(contact, idAddress)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
+
+        return toAddressResponse(address);
+    }
+
+    @Transactional
+    public AddressResponse update(User user, UpdateAddressRequest request){
+        validationService.validate(request);
+
+        Contact contact = contactRepository.findFirstByUserAndId(user, request.getIdContact())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contact not found"));
+
+        Address address = addressRepository.findFirstByContactAndId(contact, request.getIdAddress())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
+
+        address.setCity(request.getCity());
+        address.setStreet(request.getStreet());
+        address.setProvince(request.getProvince());
+        address.setCountry(request.getCountry());
+        address.setPostalCode(request.getPostalCode());
+        addressRepository.save(address);
 
         return toAddressResponse(address);
     }

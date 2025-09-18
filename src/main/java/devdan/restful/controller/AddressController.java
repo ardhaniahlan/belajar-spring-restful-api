@@ -3,6 +3,7 @@ package devdan.restful.controller;
 import devdan.restful.entity.Contact;
 import devdan.restful.entity.User;
 import devdan.restful.model.request.CreateAddressRequest;
+import devdan.restful.model.request.UpdateAddressRequest;
 import devdan.restful.model.response.AddressResponse;
 import devdan.restful.model.response.WebResponse;
 import devdan.restful.service.AddressService;
@@ -41,6 +42,24 @@ public class AddressController {
             @PathVariable("idAddress") String idAddress
     ){
         AddressResponse response = addressService.get(user, idContact, idAddress);
+        return WebResponse.<AddressResponse>builder().data(response).build();
+    }
+
+    @PutMapping(
+            path = "/api/contacts/{idContact}/addresses/{idAddress}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public  WebResponse<AddressResponse> update(
+        User user,
+        @RequestBody UpdateAddressRequest request,
+        @PathVariable("idContact") String idContact,
+        @PathVariable("idAddress") String idAddress
+    ){
+        request.setIdContact(idContact);
+        request.setIdAddress(idAddress);
+
+        AddressResponse response = addressService.update(user, request);
         return WebResponse.<AddressResponse>builder().data(response).build();
     }
 }
