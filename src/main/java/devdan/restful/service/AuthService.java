@@ -1,8 +1,8 @@
 package devdan.restful.service;
 
 import devdan.restful.entity.User;
-import devdan.restful.model.LoginUserRequest;
-import devdan.restful.model.TokenResponse;
+import devdan.restful.model.request.LoginUserRequest;
+import devdan.restful.model.response.TokenResponse;
 import devdan.restful.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

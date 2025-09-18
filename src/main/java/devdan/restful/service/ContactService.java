@@ -2,10 +2,10 @@ package devdan.restful.service;
 
 import devdan.restful.entity.Contact;
 import devdan.restful.entity.User;
-import devdan.restful.model.ContactResponse;
-import devdan.restful.model.CreateContactRequest;
-import devdan.restful.model.SearchContactRequest;
-import devdan.restful.model.UpdateContactRequest;
+import devdan.restful.model.response.ContactResponse;
+import devdan.restful.model.request.CreateContactRequest;
+import devdan.restful.model.request.SearchContactRequest;
+import devdan.restful.model.request.UpdateContactRequest;
 import devdan.restful.repository.ContactRepository;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class ContactService {

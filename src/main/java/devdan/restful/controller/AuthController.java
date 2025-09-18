@@ -1,9 +1,9 @@
 package devdan.restful.controller;
 
 import devdan.restful.entity.User;
-import devdan.restful.model.LoginUserRequest;
-import devdan.restful.model.TokenResponse;
-import devdan.restful.model.WebResponse;
+import devdan.restful.model.request.LoginUserRequest;
+import devdan.restful.model.response.TokenResponse;
+import devdan.restful.model.response.WebResponse;
 import devdan.restful.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

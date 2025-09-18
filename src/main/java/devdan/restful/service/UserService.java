@@ -1,13 +1,11 @@
 package devdan.restful.service;
 
 import devdan.restful.entity.User;
-import devdan.restful.model.RegisterUserRequest;
-import devdan.restful.model.UpdateUserRequest;
-import devdan.restful.model.UserResponse;
+import devdan.restful.model.request.RegisterUserRequest;
+import devdan.restful.model.request.UpdateUserRequest;
+import devdan.restful.model.response.UserResponse;
 import devdan.restful.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Objects;
-import java.util.Set;
 
 @Service
 public class UserService {

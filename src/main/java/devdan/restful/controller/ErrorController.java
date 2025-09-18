@@ -1,6 +1,6 @@
 package devdan.restful.controller;
 
-import devdan.restful.model.WebResponse;
+import devdan.restful.model.response.WebResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

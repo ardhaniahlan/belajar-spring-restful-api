@@ -1,6 +1,5 @@
 package devdan.restful.service;
 
-import devdan.restful.model.RegisterUserRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;

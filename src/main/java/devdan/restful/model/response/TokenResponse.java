@@ -1,4 +1,4 @@
-package devdan.restful.model;
+package devdan.restful.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

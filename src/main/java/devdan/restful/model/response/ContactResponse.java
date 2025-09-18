@@ -1,6 +1,5 @@
-package devdan.restful.model;
+package devdan.restful.model.response;
 
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

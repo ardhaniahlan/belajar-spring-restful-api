@@ -1,4 +1,4 @@
-package devdan.restful.model;
+package devdan.restful.model.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

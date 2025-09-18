@@ -3,9 +3,11 @@ package devdan.restful.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import devdan.restful.entity.User;
-import devdan.restful.model.LoginUserRequest;
-import devdan.restful.model.TokenResponse;
-import devdan.restful.model.WebResponse;
+import devdan.restful.model.request.LoginUserRequest;
+import devdan.restful.model.response.TokenResponse;
+import devdan.restful.model.response.WebResponse;
+import devdan.restful.repository.AddressRepository;
+import devdan.restful.repository.ContactRepository;
 import devdan.restful.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,12 @@ class AuthControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private ContactRepository contactRepository;
+
+    @Autowired
+    private AddressRepository addressRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Autowired
@@ -40,6 +48,8 @@ class AuthControllerTest {
 
     @BeforeEach
     void setUp() {
+        addressRepository.deleteAll();
+        contactRepository.deleteAll();
         userRepository.deleteAll();
     }
 

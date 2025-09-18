@@ -1,8 +1,12 @@
 package devdan.restful.controller;
 
-import devdan.restful.entity.Contact;
 import devdan.restful.entity.User;
-import devdan.restful.model.*;
+import devdan.restful.model.request.CreateContactRequest;
+import devdan.restful.model.request.SearchContactRequest;
+import devdan.restful.model.request.UpdateContactRequest;
+import devdan.restful.model.response.ContactResponse;
+import devdan.restful.model.response.PagingResponse;
+import devdan.restful.model.response.WebResponse;
 import devdan.restful.service.ContactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +26,7 @@ public class ContactController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse<ContactResponse> create(User user,@RequestBody CreateContactRequest request){
+    public WebResponse<ContactResponse> create(User user, @RequestBody CreateContactRequest request){
         ContactResponse response = contactService.create(user, request);
         return WebResponse.<ContactResponse>builder().data(response).build();
     }

@@ -1,6 +1,5 @@
-package devdan.restful.model;
+package devdan.restful.model.request;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,16 +10,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LoginUserRequest {
+public class UpdateUserRequest {
 
-    @NotBlank
     @Size(max = 100)
-    private String username;
+    private String name;
 
-    @NotBlank
     @Size(max = 100)
     private String password;
-
-
 
 }

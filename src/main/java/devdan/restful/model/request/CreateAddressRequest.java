@@ -1,7 +1,6 @@
-package devdan.restful.model;
+package devdan.restful.model.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -13,24 +12,25 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UpdateContactRequest {
+public class CreateAddressRequest {
 
     @JsonIgnore
     @NotBlank
-    private String id;
+    private String idContact;
+
+    @Size(max = 100)
+    private String street;
+
+    @Size(max = 100)
+    private String city;
+
+    @Size(max = 100)
+    private String province;
 
     @NotBlank
     @Size(max = 100)
-    private String firstname;
+    private String country;
 
-    @Size(max = 100)
-    private String lastname;
-
-    @Size(max = 100)
-    @Email
-    private String email;
-
-    @Size(max = 100)
-    private String phone;
-
+    @Size(max = 10)
+    private String postalCode;
 }

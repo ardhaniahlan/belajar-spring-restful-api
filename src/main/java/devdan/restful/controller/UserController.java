@@ -1,10 +1,10 @@
 package devdan.restful.controller;
 
 import devdan.restful.entity.User;
-import devdan.restful.model.RegisterUserRequest;
-import devdan.restful.model.UpdateUserRequest;
-import devdan.restful.model.UserResponse;
-import devdan.restful.model.WebResponse;
+import devdan.restful.model.request.RegisterUserRequest;
+import devdan.restful.model.request.UpdateUserRequest;
+import devdan.restful.model.response.UserResponse;
+import devdan.restful.model.response.WebResponse;
 import devdan.restful.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

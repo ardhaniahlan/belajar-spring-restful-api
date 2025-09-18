@@ -23,6 +23,8 @@ public class Address {
 
     private String province;
 
+    private String country;
+
     @Column(name = "postal_code")
     private String postalCode;
 
