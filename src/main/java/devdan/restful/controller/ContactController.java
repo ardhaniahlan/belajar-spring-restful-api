@@ -2,14 +2,14 @@ package devdan.restful.controller;
 
 import devdan.restful.entity.Contact;
 import devdan.restful.entity.User;
-import devdan.restful.model.ContactResponse;
-import devdan.restful.model.CreateContactRequest;
-import devdan.restful.model.UpdateContactRequest;
-import devdan.restful.model.WebResponse;
+import devdan.restful.model.*;
 import devdan.restful.service.ContactService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class ContactController {
@@ -61,4 +61,34 @@ public class ContactController {
         return WebResponse.<String>builder().data("OK").build();
     }
 
+    @GetMapping(
+            path = "/api/contacts",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<List<ContactResponse>> search(
+            User user,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "phone", required = false) String phone,
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
+    ){
+        SearchContactRequest request = SearchContactRequest.builder()
+                .name(name)
+                .email(email)
+                .phone(phone)
+                .page(page)
+                .size(size)
+                .build();
+
+        Page<ContactResponse> responsePage = contactService.search(user, request);
+        return WebResponse.<List<ContactResponse>>builder()
+                .data(responsePage.getContent())
+                .pagingResponse(PagingResponse.builder()
+                        .currentPage(responsePage.getNumber())
+                        .totalPage(responsePage.getTotalPages())
+                        .size(responsePage.getSize())
+                        .build())
+                .build();
+    }
 }
