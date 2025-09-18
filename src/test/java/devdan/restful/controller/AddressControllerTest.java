@@ -2,6 +2,7 @@ package devdan.restful.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import devdan.restful.entity.Address;
 import devdan.restful.entity.Contact;
 import devdan.restful.entity.User;
 import devdan.restful.model.request.CreateAddressRequest;
@@ -22,7 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -110,7 +111,7 @@ class AddressControllerTest {
         request.setCountry("");
 
         mockMvc.perform(
-                post("/api/contacts/sss/addresses" )
+                post("/api/contacts/ssss/addresses" )
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("X-API-TOKEN", "aaaa")
@@ -118,6 +119,58 @@ class AddressControllerTest {
         ).andExpectAll(
                 status().isBadRequest()
         ).andDo(result -> {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+
+            assertNotNull(response.getErrors());
+        });
+    }
+
+    @Test
+    void testGetAddressSuccess() throws Exception {
+        Contact contact = contactRepository.findById("ssss").orElseThrow();
+
+        Address address = new Address();
+        address.setId(UUID.randomUUID().toString());
+        address.setStreet("Telaga Murni");
+        address.setCity("Bekasi");
+        address.setProvince("Jawa Barat");
+        address.setCountry("Indonesia");
+        address.setPostalCode("12345");
+        address.setContact(contact);
+        addressRepository.save(address);
+
+        mockMvc.perform(
+                get("/api/contacts/ssss/addresses/" + address.getId())
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("X-API-TOKEN", "aaaa")
+        ).andExpectAll(
+                status().isOk()
+        ).andDo(result -> {
+            WebResponse<AddressResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+
+            assertNull(response.getErrors());
+            assertEquals(address.getId(), response.getData().getId());
+            assertEquals(address.getStreet(), response.getData().getStreet());
+            assertEquals(address.getCity(), response.getData().getCity());
+            assertEquals(address.getProvince(), response.getData().getProvince());
+            assertEquals(address.getCountry(), response.getData().getCountry());
+            assertEquals(address.getPostalCode(), response.getData().getPostalCode());
+        });
+    }
+
+    @Test
+    void testGetAddressNotFound() throws Exception {
+        mockMvc.perform(
+                get("/api/contacts/11312/addresses/1432")
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("X-API-TOKEN", "aaaa")
+        ).andExpectAll(
+                status().isNotFound()
+        ).andDo( result -> {
             WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
             });
 
