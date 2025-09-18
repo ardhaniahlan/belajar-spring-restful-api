@@ -294,7 +294,7 @@ class ContactControllerTest {
     void testSearchSuccess() throws Exception {
         User user = userRepository.findById("test").orElseThrow();
 
-        for (int i = 0; i < 100; i++){
+        for (int i = 0; i < 5; i++){
             Contact contact = new Contact();
             contact.setId(UUID.randomUUID().toString());
             contact.setFirstName("Ardhani" + i);

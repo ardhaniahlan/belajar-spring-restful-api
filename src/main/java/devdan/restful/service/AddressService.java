@@ -6,7 +6,6 @@ import devdan.restful.entity.User;
 import devdan.restful.model.request.CreateAddressRequest;
 import devdan.restful.model.request.UpdateAddressRequest;
 import devdan.restful.model.response.AddressResponse;
-import devdan.restful.model.response.ContactResponse;
 import devdan.restful.repository.AddressRepository;
 import devdan.restful.repository.ContactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -89,6 +89,15 @@ public class AddressService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found"));
 
         addressRepository.delete(address);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AddressResponse> list(User user, String idContact){
+        Contact contact = contactRepository.findFirstByUserAndId(user, idContact)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Contact not found"));
+
+        List<Address> addressList = addressRepository.findAllByContact(contact);
+        return addressList.stream().map(this::toAddressResponse).toList();
     }
 
     private AddressResponse toAddressResponse(Address address){

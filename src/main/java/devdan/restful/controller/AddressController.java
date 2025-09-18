@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class AddressController {
 
@@ -74,5 +76,17 @@ public class AddressController {
     ){
         addressService.remove(user, idContact, idAddress);
         return WebResponse.<String>builder().data("OK").build();
+    }
+
+    @GetMapping(
+            path = "/api/contacts/{idContact}/addresses",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public WebResponse<List<AddressResponse>> list(
+            User user,
+            @PathVariable("idContact") String idContact
+    ){
+        List<AddressResponse> response = addressService.list(user, idContact);
+        return WebResponse.<List<AddressResponse>>builder().data(response).build();
     }
 }
