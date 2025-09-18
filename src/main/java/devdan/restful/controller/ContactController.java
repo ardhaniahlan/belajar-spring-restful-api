@@ -58,7 +58,7 @@ public class ContactController {
 
     @DeleteMapping(
             path = "/api/contacts/{idContact}",
-            consumes = MediaType.APPLICATION_JSON_VALUE
+            produces = MediaType.APPLICATION_JSON_VALUE
     )
     public WebResponse<String> delete(User user,@PathVariable("idContact") String id){
         contactService.get(user, id);

@@ -62,4 +62,17 @@ public class AddressController {
         AddressResponse response = addressService.update(user, request);
         return WebResponse.<AddressResponse>builder().data(response).build();
     }
+
+    @DeleteMapping(
+            path = "/api/contacts/{idContact}/addresses/{idAddress}",
+            consumes = MediaType.APPLICATION_JSON_VALUE
+    )
+    public  WebResponse<String> delete(
+            User user,
+            @PathVariable("idContact") String idContact,
+            @PathVariable("idAddress") String idAddress
+    ){
+        addressService.remove(user, idContact, idAddress);
+        return WebResponse.<String>builder().data("OK").build();
+    }
 }

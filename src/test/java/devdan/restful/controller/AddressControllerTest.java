@@ -243,4 +243,52 @@ class AddressControllerTest {
             assertNotNull(response.getErrors());
         });
     }
+
+    @Test
+    void testDeleteAddressNotFound() throws Exception {
+        mockMvc.perform(
+                delete("/api/contacts/11312/addresses/1432")
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("X-API-TOKEN", "aaaa")
+        ).andExpectAll(
+                status().isNotFound()
+        ).andDo( result -> {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+
+            assertNotNull(response.getErrors());
+        });
+    }
+
+    @Test
+    void testRemoveAddressSuccess() throws Exception {
+        Contact contact = contactRepository.findById("ssss").orElseThrow();
+
+        Address address = new Address();
+        address.setId(UUID.randomUUID().toString());
+        address.setStreet("Telaga Murni");
+        address.setCity("Bekasi");
+        address.setProvince("Jawa Barat");
+        address.setCountry("Indonesia");
+        address.setPostalCode("12345");
+        address.setContact(contact);
+        addressRepository.save(address);
+
+        mockMvc.perform(
+                delete("/api/contacts/ssss/addresses/" + address.getId())
+                        .accept(MediaType.APPLICATION_JSON_VALUE)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .header("X-API-TOKEN", "aaaa")
+        ).andExpectAll(
+                status().isOk()
+        ).andDo(result -> {
+            WebResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {
+            });
+
+            assertNull(response.getErrors());
+            assertEquals("OK", response.getData());
+            assertFalse(addressRepository.existsById(address.getId()));
+        });
+    }
 }
