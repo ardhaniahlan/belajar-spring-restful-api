@@ -40,3 +40,7 @@ select * from addresses;
 desc addresses;
 
 ALTER TABLE addresses RENAME COLUMN portal_code TO postal_code;
+
+delete from addresses;
+delete from contacts;
+delete from users;

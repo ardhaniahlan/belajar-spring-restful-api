@@ -2,11 +2,14 @@ package devdan.restful.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import devdan.restful.entity.Contact;
 import devdan.restful.entity.User;
 import devdan.restful.model.request.RegisterUserRequest;
 import devdan.restful.model.request.UpdateUserRequest;
 import devdan.restful.model.response.UserResponse;
 import devdan.restful.model.response.WebResponse;
+import devdan.restful.repository.AddressRepository;
+import devdan.restful.repository.ContactRepository;
 import devdan.restful.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,10 +38,18 @@ class UserControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private AddressRepository addressRepository;
+
+    @Autowired
+    private ContactRepository contactRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
+        addressRepository.deleteAll();
+        contactRepository.deleteAll();
         userRepository.deleteAll();
     }
 

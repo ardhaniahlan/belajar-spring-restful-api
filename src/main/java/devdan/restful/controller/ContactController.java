@@ -61,7 +61,7 @@ public class ContactController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public WebResponse<String> delete(User user,@PathVariable("idContact") String id){
-        contactService.get(user, id);
+        contactService.delete(user, id);
         return WebResponse.<String>builder().data("OK").build();
     }
 

@@ -1,4 +1,4 @@
-# Address API Spec
+  # Address API Spec
 
 ## Create Address
 EndPoint: POST /api/contacts/{idContact}/addresses
