@@ -11,6 +11,7 @@ import devdan.restful.model.response.WebResponse;
 import devdan.restful.repository.AddressRepository;
 import devdan.restful.repository.ContactRepository;
 import devdan.restful.repository.UserRepository;
+import devdan.restful.resolver.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -45,6 +48,9 @@ class UserControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @BeforeEach
     void setUp() {
@@ -134,7 +140,7 @@ class UserControllerTest {
         mockMvc.perform(
                 get("/api/users/current")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "Not Found")
+                        .header("Authorization", "Not Found")
         ).andExpectAll(
                 status().isUnauthorized()
         ).andDo(result ->{
@@ -166,15 +172,15 @@ class UserControllerTest {
         user.setName("Test");
         user.setUsername("test");
         user.setPassword(passwordEncoder.encode("admin"));
-        user.setToken("aaaa");
-        user.setTokenExpiredAt(System.currentTimeMillis() + 10000000);
+
+        String token = jwtUtil.generatedToken(user.getUsername());
 
         userRepository.save(user);
 
         mockMvc.perform(
                 get("/api/users/current")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo(result ->{
@@ -193,15 +199,14 @@ class UserControllerTest {
         user.setName("Test");
         user.setUsername("test");
         user.setPassword(passwordEncoder.encode("admin"));
-        user.setToken("aaaa");
-        user.setTokenExpiredAt(System.currentTimeMillis() - 10000000);
-
         userRepository.save(user);
+
+        String expiredToken = jwtUtil.generateTokenWithExpiration("test", -1000);
 
         mockMvc.perform(
                 get("/api/users/current")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", expiredToken)
         ).andExpectAll(
                 status().isUnauthorized()
         ).andDo(result ->{
@@ -238,9 +243,9 @@ class UserControllerTest {
         user.setName("Test");
         user.setUsername("test");
         user.setPassword(passwordEncoder.encode("admin"));
-        user.setToken("aaaa");
-        user.setTokenExpiredAt(System.currentTimeMillis() + 10000000);
         userRepository.save(user);
+
+        String token = jwtUtil.generatedToken(user.getUsername());
 
         UpdateUserRequest request = new UpdateUserRequest();
         request.setName("Ardhan");
@@ -251,7 +256,7 @@ class UserControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(request))
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo(result ->{

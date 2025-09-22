@@ -4,7 +4,9 @@ import devdan.restful.entity.User;
 import devdan.restful.model.request.LoginUserRequest;
 import devdan.restful.model.response.TokenResponse;
 import devdan.restful.model.response.WebResponse;
+import devdan.restful.resolver.JwtUtil;
 import devdan.restful.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,8 +35,8 @@ public class AuthController {
             path = "/api/auth/logout",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public WebResponse<String> logout(User user){
-        authService.logout(user);
+    public WebResponse<String> logout(HttpServletRequest token){
+        authService.logout(token);
         return WebResponse.<String>builder().data("OK").build();
     }
 }

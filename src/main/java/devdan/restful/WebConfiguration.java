@@ -1,6 +1,6 @@
 package devdan.restful;
 
-import devdan.restful.resolver.UserArgumentResolver;
+import devdan.restful.resolver.JwtArgumentResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -12,11 +12,11 @@ import java.util.List;
 public class WebConfiguration implements WebMvcConfigurer {
 
     @Autowired
-    private UserArgumentResolver userArgumentResolver;
+    private JwtArgumentResolver jwtArgumentResolver;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         WebMvcConfigurer.super.addArgumentResolvers(resolvers);
-        resolvers.add(userArgumentResolver);
+        resolvers.add(jwtArgumentResolver);
     }
 }

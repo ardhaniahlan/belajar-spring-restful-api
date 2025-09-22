@@ -44,3 +44,7 @@ ALTER TABLE addresses RENAME COLUMN portal_code TO postal_code;
 delete from addresses;
 delete from contacts;
 delete from users;
+
+ALTER TABLE users DROP COLUMN token;
+ALTER TABLE users DROP COLUMN token_expired_at;
+

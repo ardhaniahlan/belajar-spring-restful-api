@@ -12,6 +12,7 @@ import devdan.restful.model.response.WebResponse;
 import devdan.restful.repository.AddressRepository;
 import devdan.restful.repository.ContactRepository;
 import devdan.restful.repository.UserRepository;
+import devdan.restful.resolver.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,9 @@ class AddressControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @BeforeEach
     void setUp() {
         addressRepository.deleteAll();
@@ -61,8 +65,6 @@ class AddressControllerTest {
         user.setUsername("test");
         user.setPassword(passwordEncoder.encode("admin"));
         user.setName("Test");
-        user.setToken("aaaa");
-        user.setTokenExpiredAt(System.currentTimeMillis() + 10000000);
         userRepository.save(user);
 
         Contact contact = new Contact();
@@ -77,6 +79,8 @@ class AddressControllerTest {
 
     @Test
     void testCreateAddressSuccess() throws Exception {
+        String token = jwtUtil.generatedToken("test");
+
         CreateAddressRequest request = new CreateAddressRequest();
         request.setStreet("Telaga Murni");
         request.setCity("Bekasi");
@@ -88,7 +92,7 @@ class AddressControllerTest {
                 post("/api/contacts/ssss/addresses" )
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
                         .content(objectMapper.writeValueAsString(request))
         ).andExpectAll(
                 status().isOk()
@@ -109,6 +113,8 @@ class AddressControllerTest {
 
     @Test
     void testCreateAddressBadRequest() throws Exception {
+        String token = jwtUtil.generatedToken("test");
+
         CreateAddressRequest request = new CreateAddressRequest();
         request.setCountry("");
 
@@ -116,7 +122,7 @@ class AddressControllerTest {
                 post("/api/contacts/ssss/addresses" )
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
                         .content(objectMapper.writeValueAsString(request))
         ).andExpectAll(
                 status().isBadRequest()
@@ -130,6 +136,8 @@ class AddressControllerTest {
 
     @Test
     void testGetAddressSuccess() throws Exception {
+        String token = jwtUtil.generatedToken("test");
+
         Contact contact = contactRepository.findById("ssss").orElseThrow();
 
         Address address = new Address();
@@ -146,7 +154,7 @@ class AddressControllerTest {
                 get("/api/contacts/ssss/addresses/" + address.getId())
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo(result -> {
@@ -165,11 +173,13 @@ class AddressControllerTest {
 
     @Test
     void testGetAddressNotFound() throws Exception {
+        String token = jwtUtil.generatedToken("test");
+
         mockMvc.perform(
                 get("/api/contacts/11312/addresses/1432")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isNotFound()
         ).andDo( result -> {
@@ -183,6 +193,7 @@ class AddressControllerTest {
     @Test
     void testUpdateAddressSuccess() throws Exception {
         Contact contact = contactRepository.findById("ssss").orElseThrow();
+        String token = jwtUtil.generatedToken("test");
 
         Address address = new Address();
         address.setId(UUID.randomUUID().toString());
@@ -201,12 +212,13 @@ class AddressControllerTest {
         request.setCountry("Konoha");
         request.setPostalCode("32131");
 
+
         mockMvc.perform(
                 put("/api/contacts/ssss/addresses/" + address.getId())
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(request))
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo(result -> {
@@ -226,6 +238,8 @@ class AddressControllerTest {
 
     @Test
     void testUpdateAddressBadRequest() throws Exception {
+        String token = jwtUtil.generatedToken("test");
+
         UpdateAddressRequest request = new UpdateAddressRequest();
         request.setCountry("");
 
@@ -233,7 +247,7 @@ class AddressControllerTest {
                 put("/api/contacts/ssss/addresses/sdasd" )
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
                         .content(objectMapper.writeValueAsString(request))
         ).andExpectAll(
                 status().isBadRequest()
@@ -247,11 +261,13 @@ class AddressControllerTest {
 
     @Test
     void testDeleteAddressNotFound() throws Exception {
+        String token = jwtUtil.generatedToken("test");
+
         mockMvc.perform(
                 delete("/api/contacts/11312/addresses/1432")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isNotFound()
         ).andDo( result -> {
@@ -264,6 +280,8 @@ class AddressControllerTest {
 
     @Test
     void testRemoveAddressSuccess() throws Exception {
+        String token = jwtUtil.generatedToken("test");
+
         Contact contact = contactRepository.findById("ssss").orElseThrow();
 
         Address address = new Address();
@@ -280,7 +298,7 @@ class AddressControllerTest {
                 delete("/api/contacts/ssss/addresses/" + address.getId())
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo(result -> {
@@ -295,11 +313,13 @@ class AddressControllerTest {
 
     @Test
     void testGetListAddressNotFound() throws Exception {
+        String token = jwtUtil.generatedToken("test");
+
         mockMvc.perform(
                 get("/api/contacts/11312/addresses")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isNotFound()
         ).andDo( result -> {
@@ -312,6 +332,8 @@ class AddressControllerTest {
 
     @Test
     void testGetListAddressSuccess() throws Exception {
+        String token = jwtUtil.generatedToken("test");
+
         Contact contact = contactRepository.findById("ssss").orElseThrow();
         for (int i = 0; i < 5; i++) {
             Address address = new Address();
@@ -329,7 +351,7 @@ class AddressControllerTest {
                 get("/api/contacts/ssss/addresses")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo(result -> {

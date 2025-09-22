@@ -9,6 +9,7 @@ import devdan.restful.model.response.WebResponse;
 import devdan.restful.repository.AddressRepository;
 import devdan.restful.repository.ContactRepository;
 import devdan.restful.repository.UserRepository;
+import devdan.restful.resolver.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ class AuthControllerTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @BeforeEach
     void setUp() {
         addressRepository.deleteAll();
@@ -81,8 +85,7 @@ class AuthControllerTest {
 
             User userDb = userRepository.findById("test").orElse(null);
             assertNotNull(userDb);
-            assertEquals(userDb.getToken(), response.getData().getToken());
-            assertEquals(userDb.getTokenExpiredAt(), response.getData().getExpiredAt());
+
         });
     }
 
@@ -153,14 +156,14 @@ class AuthControllerTest {
         user.setName("Ardhan");
         user.setUsername("test");
         user.setPassword(passwordEncoder.encode("admin"));
-        user.setToken("aaaa");
-        user.setTokenExpiredAt(System.currentTimeMillis() + 100000);
         userRepository.save(user);
+
+        String token = jwtUtil.generatedToken(user.getUsername());
 
         mockMvc.perform(
                 delete("/api/auth/logout")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo(result -> {
@@ -171,8 +174,6 @@ class AuthControllerTest {
 
             User userDB = userRepository.findById("test").orElse(null);
             assertNotNull(userDB);
-            assertNull(userDB.getToken());
-            assertNull(userDB.getTokenExpiredAt());
         });
     }
 

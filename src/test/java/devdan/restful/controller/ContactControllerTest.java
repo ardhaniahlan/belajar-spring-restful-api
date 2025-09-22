@@ -10,6 +10,7 @@ import devdan.restful.model.request.UpdateContactRequest;
 import devdan.restful.model.response.WebResponse;
 import devdan.restful.repository.ContactRepository;
 import devdan.restful.repository.UserRepository;
+import devdan.restful.resolver.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,9 @@ class ContactControllerTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @BeforeEach
     void setUp() {
         contactRepository.deleteAll();
@@ -53,13 +57,13 @@ class ContactControllerTest {
         user.setUsername("test");
         user.setPassword(passwordEncoder.encode("admin"));
         user.setName("Test");
-        user.setToken("aaaa");
-        user.setTokenExpiredAt(System.currentTimeMillis() + 10000000);
         userRepository.save(user);
     }
 
     @Test
     void testCreateContactBadRequest() throws Exception {
+        String token = jwtUtil.generatedToken("test");
+
         CreateContactRequest request = new CreateContactRequest();
         request.setFirstname("");
         request.setEmail("ardhanexamplecom");
@@ -69,7 +73,7 @@ class ContactControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(request))
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isBadRequest()
         ).andDo( result -> {
@@ -82,6 +86,8 @@ class ContactControllerTest {
 
     @Test
     void testCreateContactSuccess() throws Exception {
+        String token = jwtUtil.generatedToken("test");
+
         CreateContactRequest request = new CreateContactRequest();
         request.setFirstname("Ardhani");
         request.setLastname("Ahlan");
@@ -93,7 +99,7 @@ class ContactControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(request))
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo( result -> {
@@ -112,11 +118,13 @@ class ContactControllerTest {
 
     @Test
     void testGetContactNotFound() throws Exception {
+        String token = jwtUtil.generatedToken("test");
+
         mockMvc.perform(
                 get("/api/contacts/11312")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isNotFound()
         ).andDo( result -> {
@@ -130,6 +138,7 @@ class ContactControllerTest {
     @Test
     void testGetContactSuccess() throws Exception {
         User user = userRepository.findById("test").orElseThrow();
+        String token = jwtUtil.generatedToken("test");
 
         Contact contact = new Contact();
         contact.setId(UUID.randomUUID().toString());
@@ -144,7 +153,7 @@ class ContactControllerTest {
                 get("/api/contacts/" + contact.getId())
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo( result -> {
@@ -163,6 +172,7 @@ class ContactControllerTest {
     @Test
     void testUpdateContactSuccess() throws Exception{
         User user = userRepository.findById("test").orElseThrow();
+        String token = jwtUtil.generatedToken("test");
 
         Contact contact = new Contact();
         contact.setId(UUID.randomUUID().toString());
@@ -184,7 +194,7 @@ class ContactControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(request))
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo(result -> {
@@ -203,6 +213,8 @@ class ContactControllerTest {
 
     @Test
     void testUpdateContactBadRequest() throws Exception{
+        String token = jwtUtil.generatedToken("test");
+
         UpdateContactRequest request = new UpdateContactRequest();
         request.setFirstname("");
         request.setEmail("sda");
@@ -212,7 +224,7 @@ class ContactControllerTest {
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(request))
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isBadRequest()
         ).andDo(result -> {
@@ -225,11 +237,13 @@ class ContactControllerTest {
 
     @Test
     void testDeleteContactNotFound() throws Exception {
+        String token = jwtUtil.generatedToken("test");
+
         mockMvc.perform(
                 delete("/api/contacts/11312")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isNotFound()
         ).andDo( result -> {
@@ -243,6 +257,7 @@ class ContactControllerTest {
     @Test
     void testDeleteContactSuccess() throws Exception {
         User user = userRepository.findById("test").orElseThrow();
+        String token = jwtUtil.generatedToken("test");
 
         Contact contact = new Contact();
         contact.setId(UUID.randomUUID().toString());
@@ -257,7 +272,7 @@ class ContactControllerTest {
                 delete("/api/contacts/" + contact.getId())
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo( result -> {
@@ -271,11 +286,13 @@ class ContactControllerTest {
 
     @Test
     void testSearchContactNotFound() throws Exception {
+        String token = jwtUtil.generatedToken("test");
+
         mockMvc.perform(
                 get("/api/contacts")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo( result -> {
@@ -293,6 +310,7 @@ class ContactControllerTest {
     @Test
     void testSearchSuccess() throws Exception {
         User user = userRepository.findById("test").orElseThrow();
+        String token = jwtUtil.generatedToken("test");
 
         for (int i = 0; i < 5; i++){
             Contact contact = new Contact();
@@ -310,7 +328,7 @@ class ContactControllerTest {
                         .queryParam("name", "Ardhani")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo( result -> {
@@ -329,7 +347,7 @@ class ContactControllerTest {
                         .queryParam("name", "Ahlan")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo( result -> {
@@ -348,7 +366,7 @@ class ContactControllerTest {
                         .queryParam("email", "example.com")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo( result -> {
@@ -367,7 +385,7 @@ class ContactControllerTest {
                         .queryParam("phone", "0812")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo( result -> {
@@ -387,7 +405,7 @@ class ContactControllerTest {
                         .queryParam("page", "1000")
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("X-API-TOKEN", "aaaa")
+                        .header("Authorization", token)
         ).andExpectAll(
                 status().isOk()
         ).andDo( result -> {
