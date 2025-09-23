@@ -56,10 +56,12 @@ public class AuthService {
 
     @Transactional
     public void logout(HttpServletRequest request){
-        String authHeader =  request.getHeader("Authorization");
-        if (authHeader != null){
-            tokenBlacklist.add(authHeader);
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || authHeader.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token Missing");
         }
+        tokenBlacklist.add(authHeader);
     }
+
 
 }
